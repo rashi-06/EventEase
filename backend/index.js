@@ -8,6 +8,10 @@ import cookieParser from "cookie-parser";
 import DBConnection from "./src/config/db.js";
 // import redis from "./src/config/redis.js";
 import authRoutes from "./src/routes/authRoutes.js"
+import passport from "./src/config/passport.js"; 
+import session from "express-session";
+
+
 
 const app = express();
 
@@ -15,8 +19,22 @@ app.use(json());
 app.use(cors());
 app.use(cookieParser());
 
+// for google auth....
+app.use(
+    session({
+      secret: process.env.OAUTH_SECRET, 
+      resave: false,
+      saveUninitialized: false,
+    })
+);
+
+// Initialized passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 DBConnection();
+
+
 
 app.use("/api/auth", authRoutes);
 
