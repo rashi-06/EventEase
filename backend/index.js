@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import DBConnection from "./src/config/db.js";
 // import redis from "./src/config/redis.js";
 import authRoutes from "./src/routes/authRoutes.js"
+import userRoutes from "./src/routes/UserRoutes.js"
 import passport from "./src/config/passport.js"; 
 import session from "express-session";
 
@@ -37,6 +38,8 @@ DBConnection();
 
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/user" ,userRoutes)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, ()=>{
