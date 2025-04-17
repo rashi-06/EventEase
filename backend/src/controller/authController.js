@@ -45,3 +45,23 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Google login logic
+export const googleOAuthCallback = async(req,res)=>{
+  try {
+    const user = req.user;
+    const token = generateToken(user._id);
+    res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}`);
+  } catch (error) {
+    console.error("OAuth Error:", error);
+    res.status(500).json({ message: "OAuth login failed" });  
+  }
+};
+
+
+// logout method
+export const logoutUser = (req, res) => {
+  req.logout(() => {
+    res.status(200).json({ message: "Logged out successfully" });
+  });
+};
