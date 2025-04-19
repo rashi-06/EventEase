@@ -1,12 +1,14 @@
-import express from "express"
-import protect from "../middleware/authMiddleware.js"
+import express from "express";
+import { getUserProfile, updateUserProfile, deleteUser } from "../controllers/userController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 
-router.get("/profile" ,protect, async(req,res)=>{
-    res.status(200).json({message : "This is a protected route" , user : req.use});
+router.get("/profile", protect, getUserProfile);
 
-})
+router.put("/profile", protect, updateUserProfile);
+
+router.delete("/delete", protect, deleteUser);
 
 export default router;
