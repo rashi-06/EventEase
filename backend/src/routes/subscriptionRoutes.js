@@ -3,6 +3,8 @@ import {
   subscribeUser,
   getUserSubscription,
   cancelSubscription,
+  purchaseSubscription,
+  getSubscriptionStatus
 } from "../controllers/subscriptionController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -14,5 +16,9 @@ router.post("/", protect, subscribeUser);
 router.get("/", protect, getUserSubscription);
 
 router.delete("/", protect, cancelSubscription);
+
+router.post("/purchase", protect, purchaseSubscription);
+
+router.get("/status", protect, getSubscriptionStatus);
 
 export default router;
