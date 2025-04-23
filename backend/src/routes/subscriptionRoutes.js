@@ -5,8 +5,8 @@ import {
   cancelSubscription,
   purchaseSubscription,
   getSubscriptionStatus
-} from "../controllers/subscriptionController.js";
-import { protect } from "../middleware/authMiddleware.js";
+} from "../controller/subscriptionController.js";
+import protect  from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

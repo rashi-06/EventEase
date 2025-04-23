@@ -1,6 +1,5 @@
-import Payment from "../models/Payment.js";
-import Booking from "../models/Booking.js";
-
+import Booking from "../model/Booking.js"
+import Payment from "../model/Payment.js"
 
 export const createPayment = async (req, res) => {
   try {

@@ -1,6 +1,6 @@
-import Booking from "../model/Booking";
-import Event from "../model/Event";
-import Payment from "../model/Payment";
+import Booking from "../model/Booking.js"
+import Event from "../model/Event.js";
+import Payment from "../model/Payment.js";
 
 export const createBooking = async(req,res)=>{
     try {

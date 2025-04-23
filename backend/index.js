@@ -6,11 +6,15 @@ import express, { json } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import DBConnection from "./src/config/db.js";
-// import redis from "./src/config/redis.js";
+import redis from "./src/config/redis.js";
 import authRoutes from "./src/routes/authRoutes.js"
-import userRoutes from "./src/routes/UserRoutes.js"
+import userRoutes from "./src/routes/userRoutes.js" 
 import passport from "./src/config/passport.js"; 
 import session from "express-session";
+import eventRoutes from "./src/routes/eventRoutes.js";
+import bookingRoutes from "./src/routes/bookingRoutes.js"
+import paymentRoutes from "./src/routes/paymentRoutes.js"
+import subscriptionRoutes from "./src/routes/subscriptionRoutes.js"
 
 
 
@@ -21,6 +25,7 @@ app.use(cors());
 app.use(cookieParser());
 
 DBConnection();
+// redis();
 
 // for google auth....
 app.use(

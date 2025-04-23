@@ -12,7 +12,7 @@
 
 import { createClient } from 'redis';
 
-const client = createClient({
+const redis = createClient({
     username: 'default',
     password: 'nV3dm7wTzwjFno50SjdfF43NaeVU9Cqq',
     socket: {
@@ -21,11 +21,12 @@ const client = createClient({
     }
 });
 
-client.on('error', err => console.log('Redis Client Error', err));
+redis.on('error', err => console.log('Redis Client Error', err));
 
-await client.connect();
+await redis.connect();
 
-await client.set('foo', 'bar');
-const result = await client.get('foo');
+await redis.set('foo', 'bar');
+const result = await redis.get('foo');
 console.log(result)  // >>> bar
 
+export default redis;
