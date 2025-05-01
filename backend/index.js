@@ -1,7 +1,6 @@
 // require("dotenv").config();
 import dotenv from "dotenv";
 dotenv.config();
-
 import express, { json } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
