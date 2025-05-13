@@ -10,12 +10,11 @@ const protect = async (req, res, next) => {
       // Extract token from header
       token = req.headers.authorization.split(" ")[1];
       // token = req.headers.authorization.split(" ")[1];
-      console.log("Extracted Token:", token);
+    
       
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log("decoded token" , decoded);
-
+     
       const user = await User.findById(decoded.id);
       console.log("👤 Found user:", user);
 
