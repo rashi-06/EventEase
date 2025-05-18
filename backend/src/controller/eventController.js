@@ -28,10 +28,13 @@ export const createEvent = async (req, res) => {
         imageUrl,
         organizer: req.user._id, // from authMiddleware
       });
+      console.log("got the event details");
+      
   
       const savedEvent = await event.save();
       res.status(201).json(savedEvent);
     } catch (error) {
+      console.log("errro while creating the event-->" , error.message);
       res.status(500).json({ message: "Error creating event", error: error.message });
     }
 };
