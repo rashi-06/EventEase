@@ -11,6 +11,7 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
       // token = req.headers.authorization.split(" ")[1];
     
+      console.log("token received--> ", token);
       
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -19,10 +20,10 @@ const protect = async (req, res, next) => {
       console.log("👤 Found user:", user);
 
 
-      const user1 = await User.findById(decoded._id);
+      const user1 = await User.findById(decoded.id);
       console.log("👤 Found user _id:", user1);
       // Attach user to request (excluding password)
-      req.user = await User.findById(decoded._id).select("-password");
+      req.user = await User.findById(decoded.id).select("-password");
       console.log("req.user" , req.user);
 
       next(); // Proceed to the protected route
