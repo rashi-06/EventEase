@@ -73,7 +73,7 @@ export const updateEvent = async (req, res) => {
       }
   
       // Check if req.user._id === event.organizer
-      if (event.organizer.toString() !== req.user._id.toString()) {
+      if (event.organizer.toString() !== req.userId.toString()) {
         return res.status(403).json({ message: "Not authorized to update this event" });
       }
   
@@ -95,7 +95,7 @@ export const deleteEvent = async (req, res) => {
       }
   
       // Check if req.user._id === event.organizer
-      if (event.organizer.toString() !== req.user._id.toString()) {
+      if (event.organizer.toString() !== req.userId.toString()) {
         return res.status(403).json({ message: "Not authorized to delete this event" });
       }
   
