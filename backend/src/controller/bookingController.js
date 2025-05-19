@@ -45,8 +45,11 @@ export const cancelBooking = async(req,res)=>{
     try {
         const booking = await Booking.findById(req.params.id);
         if (!booking) return res.status(404).json({ message: "Booking not found" });
-
-        if (booking.user.toString() !== req.user._id.toString()) {
+        console.log("booking ka user----> ",booking.user);
+        console.log("user from req---->", req.body.userId);
+        
+        
+        if (!booking.user.equals(req.body.userId)) {
             return res.status(401).json({ message: "Not authorized to cancel this booking" });
         }
 
