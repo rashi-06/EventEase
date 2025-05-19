@@ -4,7 +4,8 @@ import Payment from "../model/Payment.js";
 
 export const createBooking = async(req,res)=>{
     try {
-        const {eventId , noOfTickets} = req.body;
+        const {eventId , noOfTickets, userId} = req.body;
+        console.log("eventId received:", eventId);
         const event = await Event.findById(eventId);
 
         if (!event) return res.status(404).json({ message: "Event not found" });
@@ -14,7 +15,7 @@ export const createBooking = async(req,res)=>{
 
         const booking = await Booking.create({
             event : eventId,
-            user  : req.body.user._id,
+            user  : userId,     
             numberOfSeats: noOfTickets,
             totalAmount: totalAmt,
         });
@@ -31,7 +32,9 @@ export const createBooking = async(req,res)=>{
 
 export const getUserBooking = async(req,res)=>{
     try {
-        const bookings  = await Booking.findById({user : req.body.user._id}).populate("event");
+        console.log("userId --> ", req.body.userId);
+        
+        const bookings  = await Booking.findOne({user : req.body.userId}).populate("event");
         res.json(bookings);
     } catch (error) {
         res.status(500).json({ message: "Error fetching bookings", error: error.message });
