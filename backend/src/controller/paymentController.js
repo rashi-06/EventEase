@@ -1,43 +1,33 @@
-import Booking from "../model/Booking.js"
-import Payment from "../model/Payment.js"
+import stripe from '../utils/stripe.js';
 
-export const createPayment = async (req, res) => {
+export const createPaymentIntent = async (req, res) => {
+  const { amount, currency = 'inr' } = req.body;
+
   try {
-    const { bookingId, amount, paymentMethod } = req.body;
+    // Validate amount
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: 'Invalid amount' });
+    }
 
-    const booking = await Booking.findById(bookingId);
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
-
-    // Create payment record
-    const payment = await Payment.create({
-      user: req.user._id,
-      booking: bookingId,
-      amount,
-      paymentMethod,
-      status: "Completed", // assume immediate for now; can extend with payment gateway
+    // Create payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100, // Stripe uses smallest currency unit (e.g. paisa)
+      currency,
+      payment_method_types: ['card', 'upi'], // Enable UPI and card
+      metadata: {
+        userId: req.body.userId.toString(), // Optional, useful for tracking
+      },
     });
 
-    // Update booking with payment info
-    booking.paymentStatus = "Paid";
-    booking.payment = payment._id;
-    await booking.save();
-
-    res.status(201).json({ message: "Payment successful", payment });
-  } catch (error) {
-    res.status(500).json({ message: "Payment failed", error: error.message });
-  }
-};
-
-// Get all payments for logged-in user
-export const getUserPayments = async (req, res) => {
-  try {
-    const payments = await Payment.find({ user: req.user._id }).populate({
-      path: "booking",
-      populate: { path: "event" }
+    // Return client secret to frontend
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
     });
-
-    res.json(payments);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching payments", error: error.message });
+    console.error('Stripe Payment Error:', error.message);
+    res.status(500).json({
+      message: 'Payment Intent creation failed',
+      error: error.message,
+    });
   }
 };
