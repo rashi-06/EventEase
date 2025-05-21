@@ -1,5 +1,4 @@
-import stripe from '../utils/stripe.js';
-
+import stripe from '../utility/stripe.js'
 export const createPaymentIntent = async (req, res) => {
   const { amount, currency = 'inr' } = req.body;
 
