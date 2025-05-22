@@ -2,20 +2,20 @@ import Booking from "../model/Booking.js"
 import Event from "../model/Event.js";
 import Payment from "../model/Payment.js";
 
-export const createBooking = async(req,res)=>{
+export const createBooking = async (req, res) => {
     try {
-        const {eventId , noOfTickets, userId} = req.body;
+        const { eventId, noOfTickets, userId } = req.body;
         console.log("eventId received:", eventId);
         const event = await Event.findById(eventId);
 
         if (!event) return res.status(404).json({ message: "Event not found" });
-        if(event.availableSeats < noOfTickets) return res.status(400).json({ message: "Not enough available seats" });
+        if (event.availableSeats < noOfTickets) return res.status(400).json({ message: "Not enough available seats" });
 
         const totalAmt = event.price * noOfTickets;
 
         const booking = await Booking.create({
-            event : eventId,
-            user  : userId,     
+            event: eventId,
+            user: userId,
             numberOfSeats: noOfTickets,
             totalAmount: totalAmt,
         });
@@ -23,32 +23,56 @@ export const createBooking = async(req,res)=>{
         event.availableSeats -= noOfTickets;
 
         await event.save();
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card", "upi"], // UPI enabled for India
+            mode: "payment",
+            line_items: [
+                {
+                    price_data: {
+                        currency: "inr",
+                        product_data: {
+                            name: event.title,
+                            description: event.description,
+                        },
+                        unit_amount: event.price * 100,
+                    },
+                    quantity: noOfTickets,
+                },
+            ],
+            metadata: {
+                bookingId: booking._id.toString(),
+                userId,
+            },
+            success_url: `${process.env.CLIENT_URL}/payment-success?bookingId=${booking._id}`,
+            cancel_url: `${process.env.CLIENT_URL}/payment-failed?bookingId=${booking._id}`,
+        });
+
         res.status(201).json(booking);
-        
+
     } catch (error) {
         res.status(500).json({ message: "Booking failed", error: error.message });
     }
 };
 
-export const getUserBooking = async(req,res)=>{
+export const getUserBooking = async (req, res) => {
     try {
         console.log("userId --> ", req.body.userId);
-        
-        const bookings  = await Booking.findOne({user : req.body.userId}).populate("event");
+
+        const bookings = await Booking.findOne({ user: req.body.userId }).populate("event");
         res.json(bookings);
     } catch (error) {
         res.status(500).json({ message: "Error fetching bookings", error: error.message });
     }
 };
 
-export const cancelBooking = async(req,res)=>{
+export const cancelBooking = async (req, res) => {
     try {
         const booking = await Booking.findById(req.params.id);
         if (!booking) return res.status(404).json({ message: "Booking not found" });
-        console.log("booking ka user----> ",booking.user);
+        console.log("booking ka user----> ", booking.user);
         console.log("user from req---->", req.body.userId);
-        
-        
+
+
         if (!booking.user.equals(req.body.userId)) {
             return res.status(401).json({ message: "Not authorized to cancel this booking" });
         }
@@ -57,23 +81,23 @@ export const cancelBooking = async(req,res)=>{
             return res.status(400).json({ message: "Booking already cancelled" });
         }
 
-         // Restore seats
+        // Restore seats
         const event = await Event.findById(booking.event);
         if (event) {
             event.availableSeats += booking.numberOfSeats;
             await event.save();
         }
 
-        
+
         booking.bookingStatus = "Cancelled";
-         // Refund logic (pseudo-code or call to real payment gateway API)
+        // Refund logic (pseudo-code or call to real payment gateway API)
         const payment = await Payment.findOne({ booking: booking._id });
 
         if (payment) {
             payment.status = "Refunded"; // or "Cancelled"
             await payment.save();
         }
-         // You could also integrate a real refund API here (e.g., Stripe or Razorpay)
+        // You could also integrate a real refund API here (e.g., Stripe or Razorpay)
         await booking.save();
         res.json({ message: "Booking cancelled", booking });
     } catch (error) {
