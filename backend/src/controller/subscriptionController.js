@@ -57,7 +57,7 @@ export const cancelSubscription = async (req, res) => {
 
 export const purchaseSubscription = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.body.userId;
     const { amount, paymentId } = req.body;
 
     // Mock: You can integrate with Stripe or Razorpay here
