@@ -1,5 +1,6 @@
 import Subscription from "../model/Subscription.js";
 
+
 export const subscribeUser = async (req, res) => {
   try {
     const existingSub = await Subscription.findOne({ user: req.user._id });
@@ -9,7 +10,7 @@ export const subscribeUser = async (req, res) => {
     }
 
     const subscription = new Subscription({
-      user: req.user._id,
+      user: req.body.userId,
       planType: "Standard", // fixed plan
       price: 499, // fixed price
       status: "active",
