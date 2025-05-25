@@ -3,7 +3,7 @@ import Subscription from "../model/Subscription.js";
 
 export const subscribeUser = async (req, res) => {
   try {
-    const existingSub = await Subscription.findOne({ user: req.user._id });
+    const existingSub = await Subscription.findOne({ user: req.body.userId});
 
     if (existingSub && existingSub.status === "active") {
       return res.status(400).json({ message: "You already have an active subscription." });
@@ -27,7 +27,7 @@ export const subscribeUser = async (req, res) => {
 
 export const getUserSubscription = async (req, res) => {
   try {
-    const subscription = await Subscription.findOne({ user: req.user._id });
+    const subscription = await Subscription.findOne({ user: req.body.userId });
     if (!subscription) {
       return res.status(404).json({ message: "No subscription found" });
     }
@@ -39,7 +39,7 @@ export const getUserSubscription = async (req, res) => {
 
 export const cancelSubscription = async (req, res) => {
   try {
-    const subscription = await Subscription.findOne({ user: req.user._id });
+    const subscription = await Subscription.findOne({ user: req.body.userId });
 
     if (!subscription || subscription.status === "cancelled") {
       return res.status(400).json({ message: "No active subscription to cancel." });
@@ -105,7 +105,7 @@ export const purchaseSubscription = async (req, res) => {
 
 export const getSubscriptionStatus = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.body.userId;
 
     const subscription = await Subscription.findOne({ user: userId }).populate("payment");
 
