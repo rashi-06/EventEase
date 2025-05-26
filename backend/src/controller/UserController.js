@@ -2,7 +2,7 @@ import User from "../model/User.js"
 
 export const getUserProfile = async(req,res)=>{
     try {
-        const user = await User.findById(req.user._id).select("-password");
+        const user = await User.findById(req.body.userId).select("-password");
         if (!user) return res.status(404).json({ message: "User not found" });
 
         res.json(user);
@@ -13,7 +13,7 @@ export const getUserProfile = async(req,res)=>{
 
 export const updateUserProfile = async(req,res)=>{
     try {
-        const user = await User.findById(req.user._id).select("-password");
+        const user = await User.findById(req.body.userId).select("-password");
         if (!user) return res.status(404).json({ message: "User not found" });
         
         
@@ -26,7 +26,7 @@ export const updateUserProfile = async(req,res)=>{
 
         const updatedUser =  await user.save();
         res.status(200).json({
-            _id: updatedUser._id,
+            _id: updatedbody.userId,
             name: updatedUser.name,
             email: updatedUser.email,
         })
@@ -37,7 +37,7 @@ export const updateUserProfile = async(req,res)=>{
 
 export const deleteUser = async(req,res)=>{
     try {
-        await User.findByIdAndDelete(req.user._id);
+        await User.findByIdAndDelete(req.body.userId);
         res.json({ message: "User deleted successfully" });
     } 
     catch (error) {
