@@ -26,7 +26,7 @@ export const createEvent = async (req, res) => {
         availableSeats,
         totalSeats,
         imageUrl,
-        organizer: req.user._id, // from authMiddleware
+        organizer: req.body.userId, // from authMiddleware
       });
       console.log("got the event details");
       
@@ -72,7 +72,7 @@ export const updateEvent = async (req, res) => {
         return res.status(404).json({ message: "Event not found" });
       }
   
-      // Check if req.user._id === event.organizer
+      // Check if req.body.userId === event.organizer
       if (event.organizer.toString() !== req.userId.toString()) {
         return res.status(403).json({ message: "Not authorized to update this event" });
       }
@@ -94,7 +94,7 @@ export const deleteEvent = async (req, res) => {
         return res.status(404).json({ message: "Event not found" });
       }
   
-      // Check if req.user._id === event.organizer
+      // Check if req.body.userId === event.organizer
       if (event.organizer.toString() !== req.userId.toString()) {
         return res.status(403).json({ message: "Not authorized to delete this event" });
       }
