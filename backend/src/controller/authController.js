@@ -51,8 +51,8 @@ export const loginUser = async (req, res) => {
 // Google login logic
 export const googleOAuthCallback = async(req,res)=>{
   try {
-    const user = req.user;
-    const token = generateToken(user._id);
+    const user = req.body.userId;
+    const token = generateToken(user);
     res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}`);
   } catch (error) {
     console.error("OAuth Error:", error);
