@@ -93,8 +93,13 @@ export const cancelBooking = async (req, res) => {
         // Refund logic (pseudo-code or call to real payment gateway API)
         const payment = await Payment.findOne({ booking: booking._id });
 
-        if (payment) {
-            payment.status = "Refunded"; // or "Cancelled"
+
+        if (payment && payment.paymentIntentId) {
+            const refund = await stripe.refunds.create({
+                payment_intent: payment.paymentIntentId,
+            });
+            payment.status = "Refunded";
+            payment.refundId = refund.id;
             await payment.save();
         }
         // You could also integrate a real refund API here (e.g., Stripe or Razorpay)
