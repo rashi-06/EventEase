@@ -1,6 +1,7 @@
 import Booking from "../model/Booking.js"
 import Event from "../model/Event.js";
 import Payment from "../model/Payment.js";
+import stripe from "../utility/stripe.js";
 
 export const createBooking = async (req, res) => {
     try {
