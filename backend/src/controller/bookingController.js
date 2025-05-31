@@ -5,7 +5,7 @@ import stripe from "../utility/stripe.js";
 
 export const createBooking = async (req, res) => {
     try {
-        const { eventId, noOfTickets, userId } = req.body;
+        const { eventId, noOfTickets, userId, paymentMethodType = "card"  } = req.body;
         console.log("eventId received:", eventId);
         const event = await Event.findById(eventId);
 
@@ -21,34 +21,25 @@ export const createBooking = async (req, res) => {
             totalAmount: totalAmt,
         });
 
+        // Create Stripe Payment Intent with UPI
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: totalAmt * 100, // in paisa
+            currency: "inr",
+            payment_method_types: [paymentMethodType], // card or upi....
+            metadata: {
+                eventId,
+                userId,
+                noOfTickets,
+            },
+        });
         event.availableSeats -= noOfTickets;
 
         await event.save();
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card", "upi"], // UPI enabled for India
-            mode: "payment",
-            line_items: [
-                {
-                    price_data: {
-                        currency: "inr",
-                        product_data: {
-                            name: event.title,
-                            description: event.description,
-                        },
-                        unit_amount: event.price * 100,
-                    },
-                    quantity: noOfTickets,
-                },
-            ],
-            metadata: {
-                bookingId: booking._id.toString(),
-                userId,
-            },
-            success_url: `${process.env.CLIENT_URL}/payment-success?bookingId=${booking._id}`,
-            cancel_url: `${process.env.CLIENT_URL}/payment-failed?bookingId=${booking._id}`,
+        res.status(201).json({
+            message: "Booking created, proceed to payment",
+            bookingId: booking._id,
+            clientSecret: paymentIntent.client_secret,
         });
-
-        res.status(201).json(booking);
 
     } catch (error) {
         res.status(500).json({ message: "Booking failed", error: error.message });
