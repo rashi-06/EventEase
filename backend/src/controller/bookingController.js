@@ -2,6 +2,7 @@ import Booking from "../model/Booking.js"
 import Event from "../model/Event.js";
 import Payment from "../model/Payment.js";
 import stripe from "../utility/stripe.js";
+import sendEmail, { sendMail } from "../utility/sendMail.js"
 
 export const createBooking = async (req, res) => {
     try {
@@ -35,6 +36,22 @@ export const createBooking = async (req, res) => {
         event.availableSeats -= noOfTickets;
 
         await event.save();
+
+        await sendMail({
+            to: user.email,
+            subject: "🎟 Booking Confirmed - EventEase",
+            html: `...`, // same HTML from above
+            ticketDetails: {
+                userName: user.name,
+                eventTitle: event.title,
+                venue: event.venue,
+                date: event.date,
+                time: event.time,
+                noOfTickets,
+                amount: totalAmt,
+            },
+        })
+
         res.status(201).json({
             message: "Booking created, proceed to payment",
             bookingId: booking._id,
