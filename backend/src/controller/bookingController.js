@@ -40,7 +40,7 @@ export const createBooking = async (req, res) => {
         await sendMail({
             to: user.email,
             subject: "🎟 Booking Confirmed - EventEase",
-            html: `...`, // same HTML from above
+            html: `Booking Confirm`, // same HTML from above
             ticketDetails: {
                 userName: user.name,
                 eventTitle: event.title,
