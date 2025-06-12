@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -56,7 +57,7 @@ export default function LoginPage() {
           onClick={handleGoogleLogin}
           className="w-full border border-gray-300 hover:bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
         >
-          <img src="/google-icon.svg" alt="Google" className="h-5 w-5" />
+         <FcGoogle />
           Continue with Google
         </button>
         <p className="text-center text-sm text-gray-500">
