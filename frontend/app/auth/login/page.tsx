@@ -2,13 +2,30 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import  axios  from "axios";
+import { error } from "console";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async(e: React.FormEvent) => {
     e.preventDefault();
+    if(!email.trim().length || !password.trim().length){
+      alert("Please enter proper details");
+      return;
+    }
+    await axios.get('http://localhost:5000/api/auth/login')
+      .then(res=>{
+        console.log(res);
+        
+      }).catch((error)=>{
+        console.log(error);
+        
+      })
+
+
+    
     // handle email/password login logic here
   };
 
@@ -22,7 +39,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
         <h2 className="text-3xl font-bold text-center text-gray-900">Welcome Back</h2>
         <p className="text-center text-gray-500">Login to your EventEase account</p>
-        <form onSubmit={handleLogin} className="mt-8 space-y-6">
+        <form className="mt-8 space-y-6">
           <div className="space-y-4">
             <input
               type="email"
@@ -42,6 +59,7 @@ export default function LoginPage() {
             />
           </div>
           <button
+            onClick={handleLogin}
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition duration-200"
           >
