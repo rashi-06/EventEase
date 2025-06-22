@@ -2,30 +2,35 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import  axios  from "axios";
-import { error } from "console";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async(e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!email.trim().length || !password.trim().length){
+    if (!email.trim().length || !password.trim().length) {
       alert("Please enter proper details");
       return;
     }
-    await axios.post('http://localhost:5000/api/auth/login' , {email , password})
-      .then(res=>{
-        console.log(res);
-        
-      }).catch((error)=>{
+    await axios.post('http://localhost:5000/api/auth/login', { email, password })
+      .then((res: any) => {
+        if (res.data && res.data._id) {
+          router.push('/home/allEvents');
+        } else {
+          alert(res.data.message || "Login failed");
+        }
+
+      }).catch((error) => {
         console.log(error);
-        
+
       })
 
 
-    
+
     // handle email/password login logic here
   };
 
@@ -75,7 +80,7 @@ export default function LoginPage() {
           onClick={handleGoogleLogin}
           className="w-full border border-gray-300 hover:bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
         >
-         <FcGoogle />
+          <FcGoogle />
           Continue with Google
         </button>
         <p className="text-center text-sm text-gray-500">
