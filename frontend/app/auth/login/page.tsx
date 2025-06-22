@@ -15,7 +15,7 @@ export default function LoginPage() {
       alert("Please enter proper details");
       return;
     }
-    await axios.get('http://localhost:5000/api/auth/login')
+    await axios.post('http://localhost:5000/api/auth/login' , {email , password})
       .then(res=>{
         console.log(res);
         
