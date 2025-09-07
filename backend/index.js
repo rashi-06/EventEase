@@ -13,17 +13,22 @@ import eventRoutes from "./src/routes/eventRoutes.js";
 import bookingRoutes from "./src/routes/bookingRoutes.js"
 import paymentRoutes from "./src/routes/paymentRoutes.js"
 import subscriptionRoutes from "./src/routes/subscriptionRoutes.js"
+import client from "./src/config/redis.js";
 
 
 
 const app = express();
 
 app.use(json());
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000", // or your frontend URL
+  credentials: true
+}));
 app.use(cookieParser());
 
 DBConnection();
-// redis();
+// client();
 
 // for google auth....
 app.use(
