@@ -26,16 +26,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "2rem auto" }}>
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        <h2 className="text-3xl font-bold text-center text-blue-900">Login</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
-            style={{ width: "100%", marginBottom: 8 }}
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           <input
             type="password"
@@ -43,11 +44,12 @@ export default function LoginPage() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
-            style={{ width: "100%", marginBottom: 8 }}
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
-          <button type="submit" style={{ width: "100%" }}>Login</button>
-          {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
+          <button type="submit" className="w-full py-3 px-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors">Login</button>
+          {error && <div className="text-red-600 text-center mt-2">{error}</div>}
         </form>
       </div>
-    );
+    </div>
+  );
 }

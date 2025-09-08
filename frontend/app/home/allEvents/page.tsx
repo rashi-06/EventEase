@@ -30,15 +30,17 @@ export default function AllEventsPage() {
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
-    <div style={{ maxWidth: 800, margin: "2rem auto" }}>
-      <h1>All Events</h1>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+    <div className="max-w-5xl mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-8 text-blue-900 text-center">All Events</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {events.map(event => (
-          <div key={event._id} style={{ border: "1px solid #eee", borderRadius: 8, padding: 16, width: 250 }}>
-            <h3>{event.title}</h3>
-            <p>Date: {new Date(event.date).toLocaleDateString()}</p>
-            <p>Location: {event.location}</p>
-            <Link href={`/home/allEvents/${event._id}`}>View Details</Link>
+          <div key={event._id} className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg transition-shadow">
+            <div>
+              <h3 className="text-xl font-semibold text-blue-800 mb-2">{event.title}</h3>
+              <p className="text-gray-600 mb-1">Date: {new Date(event.date).toLocaleDateString()}</p>
+              <p className="text-gray-600 mb-3">Location: {event.location}</p>
+            </div>
+            <Link href={`/home/allEvents/${event._id}`} className="mt-4 inline-block text-center bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">View Details</Link>
           </div>
         ))}
       </div>
