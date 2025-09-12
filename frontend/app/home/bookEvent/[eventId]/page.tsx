@@ -104,9 +104,9 @@ export default function BookEventPage({ params }: { params: { eventId: string } 
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8">
         <h1 className="text-2xl font-bold text-blue-900 mb-4">Book Event: {event.title}</h1>
-        <p className="text-gray-700 mb-1">Date: {new Date(event.date).toLocaleDateString()}</p>
-        <p className="text-gray-700 mb-1">Location: {event.location}</p>
-        <p className="text-gray-700 mb-4">Price: ₹{event.price || 0}</p>
+        <p className="text-gray-800 mb-1">Date: {new Date(event.date).toLocaleDateString()}</p>
+        <p className="text-gray-800 mb-1">Location: {event.location}</p>
+        <p className="text-gray-800 mb-4">Price: ₹{event.price || 0}</p>
         {!clientSecret ? (
           <form onSubmit={handleBooking} className="space-y-4">
             <input
@@ -115,7 +115,7 @@ export default function BookEventPage({ params }: { params: { eventId: string } 
               value={name}
               onChange={e => setName(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
             <input
               type="email"
@@ -123,7 +123,7 @@ export default function BookEventPage({ params }: { params: { eventId: string } 
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
             <input
               type="number"
@@ -131,7 +131,7 @@ export default function BookEventPage({ params }: { params: { eventId: string } 
               max={event.availableSeats || 10}
               value={noOfTickets}
               onChange={e => setNoOfTickets(Number(e.target.value))}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
             <button type="submit" className="w-full py-3 px-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors">Book Now</button>
           </form>

@@ -57,19 +57,19 @@ export default function ProfilePage() {
         <h1 className="text-3xl font-bold text-blue-900 mb-4">User Profile</h1>
         {user && (
           <div className="mb-6">
-            <div className="text-lg font-semibold text-gray-800">{user.name}</div>
-            <div className="text-gray-600">{user.email}</div>
+            <div className="text-lg font-semibold text-gray-900">{user.name}</div>
+            <div className="text-gray-800">{user.email}</div>
           </div>
         )}
       </div>
       <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
         <h2 className="text-2xl font-bold text-blue-800 mb-4">My Bookings</h2>
-        {bookings.length === 0 ? <p className="text-gray-500">No bookings found.</p> : (
+        {bookings.length === 0 ? <p className="text-gray-600">No bookings found.</p> : (
           <ul className="space-y-2">
             {bookings.map(b => (
               <li key={b._id} className="bg-blue-50 rounded-lg px-4 py-2 flex justify-between items-center">
-                <span>{b.eventTitle}</span>
-                <span className="text-gray-600 text-sm">{new Date(b.date).toLocaleDateString()}</span>
+                <span className="text-gray-900">{b.eventTitle}</span>
+                <span className="text-gray-700 text-sm">{new Date(b.date).toLocaleDateString()}</span>
               </li>
             ))}
           </ul>
@@ -77,12 +77,12 @@ export default function ProfilePage() {
       </div>
       <div className="bg-white rounded-2xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-blue-800 mb-4">My Subscriptions</h2>
-        {subscriptions.length === 0 ? <p className="text-gray-500">No subscriptions found.</p> : (
+        {subscriptions.length === 0 ? <p className="text-gray-600">No subscriptions found.</p> : (
           <ul className="space-y-2">
             {subscriptions.map(s => (
               <li key={s._id} className="bg-blue-50 rounded-lg px-4 py-2 flex justify-between items-center">
-                <span>{s.type}</span>
-                <span className="text-gray-600 text-sm">{s.status}</span>
+                <span className="text-gray-900">{s.type}</span>
+                <span className="text-gray-700 text-sm">{s.status}</span>
               </li>
             ))}
           </ul>

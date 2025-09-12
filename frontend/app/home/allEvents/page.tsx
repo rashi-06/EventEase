@@ -37,8 +37,8 @@ export default function AllEventsPage() {
           <div key={event._id} className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg transition-shadow">
             <div>
               <h3 className="text-xl font-semibold text-blue-800 mb-2">{event.title}</h3>
-              <p className="text-gray-600 mb-1">Date: {new Date(event.date).toLocaleDateString()}</p>
-              <p className="text-gray-600 mb-3">Location: {event.location}</p>
+              <p className="text-gray-800 mb-1">Date: {new Date(event.date).toLocaleDateString()}</p>
+              <p className="text-gray-800 mb-3">Location: {event.location}</p>
             </div>
             <Link href={`/home/allEvents/${event._id}`} className="mt-4 inline-block text-center bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">View Details</Link>
           </div>
