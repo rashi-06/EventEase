@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,13 +13,13 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password
+      }, {
+        withCredentials: true,
       });
-      if (!res.ok) throw new Error("Invalid credentials");
+      if (res.status !== 200) throw new Error("Invalid credentials");
       router.push("/home/allEvents");
     } catch (err: any) {
       setError(err.message || "Login failed");

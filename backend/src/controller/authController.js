@@ -36,11 +36,17 @@ export const loginUser = async (req, res) => {
     if (!user || !(await user.comparePassword(password)))
       return res.status(400).json({ message: "Invalid credentials" });
 
-    res.json({
+    res.cookie("token", generateToken(user._id), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
+    res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      token: generateToken(user._id),
     });
   } catch (error) {
     console.log("errorr ----> ", error.message);

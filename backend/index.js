@@ -4,7 +4,7 @@ import express, { json } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import DBConnection from "./src/config/db.js";
-import redis from "./src/config/redis.js";
+// import redis from "./src/config/redis.js";
 import authRoutes from "./src/routes/authRoutes.js"
 import userRoutes from "./src/routes/UserRoutes.js"
 import passport from "./src/config/passport.js"; 
@@ -13,7 +13,8 @@ import eventRoutes from "./src/routes/eventRoutes.js";
 import bookingRoutes from "./src/routes/bookingRoutes.js"
 import paymentRoutes from "./src/routes/paymentRoutes.js"
 import subscriptionRoutes from "./src/routes/subscriptionRoutes.js"
-import client from "./src/config/redis.js";
+import authMiddleware from "./src/middleware/authMiddleware.js";
+// import client from "./src/config/redis.js";
 
 
 
@@ -45,12 +46,12 @@ app.use(passport.session());
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/events", eventRoutes);
-app.use("/api/bookings", bookingRoutes);
-app.use("/api/payments", paymentRoutes);
-app.use("/api/subscriptions", subscriptionRoutes);
 
+app.use("/api/users", authMiddleware, userRoutes);
+app.use("/api/events", authMiddleware, eventRoutes);
+app.use("/api/bookings", authMiddleware, bookingRoutes);
+app.use("/api/payments", authMiddleware, paymentRoutes);
+app.use("/api/subscriptions", authMiddleware, subscriptionRoutes);
 // Health check
 app.get("/", (req, res) => {
   res.send("EventEase API is running 🚀");

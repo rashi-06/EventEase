@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import axios from "axios";
 
 interface Event {
   _id: string;
@@ -16,14 +17,18 @@ export default function AllEventsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/events")
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch events");
-        return res.json();
-      })
-      .then(data => setEvents(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+    const fetchEvents = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/events", { withCredentials: true });
+        setEvents(res.data);
+      } catch (err: any) {
+        setError(err?.message || "Failed to load events");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
   if (loading) return <div>Loading events...</div>;
