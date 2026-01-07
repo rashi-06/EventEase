@@ -70,7 +70,7 @@ export default function BookEventPage({ params }: { params: { eventId: string } 
   useEffect(() => {
     const loadEvent = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/events/${params.eventId}`);
+        const res = await axios.get(`http://localhost:5000/api/events/${params.eventId}`,{ withCredentials: true });
         setEvent(res.data);
       } catch (err: any) {
         setError(err?.response?.data?.message || err.message || "Failed to fetch event");
