@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
@@ -13,16 +14,15 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Signup failed");
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        { name, email, password },
+        { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      );
+      if (res.status < 200 || res.status >= 300) throw new Error("Signup failed");
       router.push("/auth/login");
     } catch (err: any) {
-      setError(err.message || "Signup failed");
+      setError(err?.response?.data?.message || err.message || "Signup failed");
     }
   };
 

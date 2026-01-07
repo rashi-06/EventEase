@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function PaymentStatusPage() {
   const searchParams = useSearchParams();
@@ -21,17 +22,21 @@ export default function PaymentStatusPage() {
       return;
     }
     // Call backend to verify payment
-    fetch(`http://localhost:5000/api/payments/verify?paymentId=${paymentId}&bookingId=${bookingId}&status=${paymentStatus}`)
-      .then(res => res.json())
-      .then(data => {
-        setStatus(data.status);
-        setMessage(data.message || "");
-      })
-      .catch(() => {
+    (async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/payments/verify?paymentId=${paymentId}&bookingId=${bookingId}&status=${paymentStatus}`,
+          { withCredentials: true }
+        );
+        setStatus(res.data.status);
+        setMessage(res.data.message || "");
+      } catch (e) {
         setStatus("error");
         setMessage("Failed to verify payment.");
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [searchParams]);
 
   if (loading) return <div>Verifying payment...</div>;

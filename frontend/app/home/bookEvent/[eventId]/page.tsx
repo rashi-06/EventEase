@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {loadStripe} from "@stripe/stripe-js";
 import {Elements, PaymentElement, useStripe, useElements} from "@stripe/react-stripe-js";
 
@@ -67,32 +68,32 @@ export default function BookEventPage({ params }: { params: { eventId: string } 
   const [bookingId, setBookingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/events/${params.eventId}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch event");
-        return res.json();
-      })
-      .then(data => setEvent(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+    const loadEvent = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/events/${params.eventId}`);
+        setEvent(res.data);
+      } catch (err: any) {
+        setError(err?.response?.data?.message || err.message || "Failed to fetch event");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEvent();
   }, [params.eventId]);
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventId: params.eventId, name, email, noOfTickets }),
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Booking failed");
-      const data = await res.json();
-      setBookingId(data.bookingId || null);
-      setClientSecret(data.clientSecret || null);
+      const res = await axios.post(
+        "http://localhost:5000/api/bookings",
+        { eventId: params.eventId, name, email, noOfTickets },
+        { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      );
+      setBookingId(res.data.bookingId || null);
+      setClientSecret(res.data.clientSecret || null);
     } catch (err: any) {
-      setError(err.message || "Booking failed");
+      setError(err?.response?.data?.message || err.message || "Booking failed");
     }
   };
 

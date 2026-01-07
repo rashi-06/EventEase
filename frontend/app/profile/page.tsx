@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 interface User {
   name: string;
@@ -29,18 +30,15 @@ export default function ProfilePage() {
       setError("");
       try {
         const [userRes, bookingsRes, subsRes] = await Promise.all([
-          fetch("http://localhost:5000/api/users/me", { credentials: "include" }),
-          fetch("http://localhost:5000/api/bookings/my", { credentials: "include" }),
-          fetch("http://localhost:5000/api/subscriptions/my", { credentials: "include" })
+          axios.get("http://localhost:5000/api/users/me", { withCredentials: true }),
+          axios.get("http://localhost:5000/api/bookings/my", { withCredentials: true }),
+          axios.get("http://localhost:5000/api/subscriptions/my", { withCredentials: true })
         ]);
-        if (!userRes.ok) throw new Error("Failed to fetch user info");
-        if (!bookingsRes.ok) throw new Error("Failed to fetch bookings");
-        if (!subsRes.ok) throw new Error("Failed to fetch subscriptions");
-        setUser(await userRes.json());
-        setBookings(await bookingsRes.json());
-        setSubscriptions(await subsRes.json());
+        setUser(userRes.data);
+        setBookings(bookingsRes.data);
+        setSubscriptions(subsRes.data);
       } catch (err: any) {
-        setError(err.message || "Failed to load profile");
+        setError(err?.response?.data?.message || err.message || "Failed to load profile");
       } finally {
         setLoading(false);
       }
