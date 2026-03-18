@@ -31,6 +31,11 @@ const subscriptionSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    payment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+      default: null,
+    },
     status: {
       type: String,
       enum: ["active", "cancelled", "expired"],

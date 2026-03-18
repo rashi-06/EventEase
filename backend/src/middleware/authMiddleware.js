@@ -27,6 +27,8 @@ const protect = async (req, res, next) => {
     console.log("👤 Authenticated user:", user);
 
     // 4. Attach user to request
+    req.body = req.body || {};
+    req.body.userId = user._id;
     req.user = user;
 
     next(); // move to route controller

@@ -10,7 +10,7 @@ const paymentSchema = new mongoose.Schema(
         booking: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Booking",
-            required: true,
+            required: false,
         },
         amount: {
             type: Number,
@@ -35,6 +35,10 @@ const paymentSchema = new mongoose.Schema(
             default: {},
         },
         transactionId: {
+            type: String,
+            default: null,
+        },
+        paymentIntentId: {
             type: String,
             default: null,
         },
