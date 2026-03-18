@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import DBConnection from "./src/config/db.js";
 // import redis from "./src/config/redis.js";
 import authRoutes from "./src/routes/authRoutes.js"
-import userRoutes from "./src/routes/UserRoutes.js"
+import userRoutes from "./src/routes/userRoutes.js"
 import passport from "./src/config/passport.js"; 
 import session from "express-session";
 import eventRoutes from "./src/routes/eventRoutes.js";

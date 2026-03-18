@@ -1,4 +1,5 @@
 import Subscription from "../model/Subscription.js";
+import Payment from "../model/Payment.js";
 
 
 export const subscribeUser = async (req, res) => {
@@ -11,9 +12,10 @@ export const subscribeUser = async (req, res) => {
 
     const subscription = new Subscription({
       user: req.body.userId,
-      planType: "Standard", // fixed plan
+      plan: "standard",
       price: 499, // fixed price
       status: "active",
+      isActive: true,
       startDate: new Date(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
     });
@@ -46,6 +48,7 @@ export const cancelSubscription = async (req, res) => {
     }
 
     subscription.status = "cancelled";
+    subscription.isActive = false;
     subscription.endDate = new Date(); // effective immediately
     await subscription.save();
 
@@ -71,7 +74,7 @@ export const purchaseSubscription = async (req, res) => {
       user: userId,
       amount,
       status: "success",
-      paymentGateway: "custom", // or "stripe", "razorpay"
+      paymentMethod: "other",
       transactionId: paymentId,
     });
 
@@ -88,6 +91,9 @@ export const purchaseSubscription = async (req, res) => {
         endDate,
         isActive: true,
         plan: "standard",
+        status: "active",
+        price: amount,
+        paymentId,
         payment: payment._id,
       },
       { upsert: true, new: true }

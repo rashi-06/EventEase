@@ -5,6 +5,7 @@ import stripe from "../utility/stripe.js";
 import { sendMail } from "../utility/sendMail.js"
 
 export const createBooking = async (req, res) => {
+    debugger;
     try {
         const { eventId, noOfTickets, userId, paymentMethodType = "card"  } = req.body;
         console.log("eventId received:", eventId);
@@ -23,41 +24,42 @@ export const createBooking = async (req, res) => {
         });
 
         // Create Stripe Payment Intent with UPI
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: totalAmt * 100, // in paisa
-            currency: "inr",
-            payment_method_types: [paymentMethodType], // card or upi....
-            metadata: {
-                eventId,
-                userId,
-                noOfTickets,
-            },
-        });
-        event.availableSeats -= noOfTickets;
+        // const paymentIntent = await stripe.paymentIntents.create({
+        //     amount: totalAmt * 100, // in paisa
+        //     currency: "inr",
+        //     payment_method_types: [paymentMethodType], // card or upi....
+        //     metadata: {
+        //         eventId,
+        //         userId,
+        //         noOfTickets,
+        //     },
+        // });
+        // event.availableSeats -= noOfTickets;
 
-        await event.save();
+        // await event.save();
 
-        await sendMail({
-            to: user.email,
-            subject: "🎟 Booking Confirmed - EventEase",
-            html: `Booking Confirm`, // same HTML from above
-            ticketDetails: {
-                userName: user.name,
-                eventTitle: event.title,
-                venue: event.venue,
-                date: event.date,
-                time: event.time,
-                noOfTickets,
-                amount: totalAmt,
-            },
-        })
+        // await sendMail({
+        //     to: user.email,
+        //     subject: "🎟 Booking Confirmed - EventEase",
+        //     html: `Booking Confirm`, // same HTML from above
+        //     ticketDetails: {
+        //         userName: user.name,
+        //         eventTitle: event.title,
+        //         venue: event.venue,
+        //         date: event.date,
+        //         time: event.time,
+        //         noOfTickets,
+        //         amount: totalAmt,
+        //     },
+        // })
 
         res.status(201).json({
             message: "Booking created, proceed to payment",
             bookingId: booking._id,
-            clientSecret: paymentIntent.client_secret,
         });
-
+        // bookingId: booking._id,
+        // clientSecret: paymentIntent.client_secret,
+        
     } catch (error) {
         res.status(500).json({ message: "Booking failed", error: error.message });
     }
@@ -86,7 +88,7 @@ export const cancelBooking = async (req, res) => {
             return res.status(401).json({ message: "Not authorized to cancel this booking" });
         }
 
-        if (booking.bookingStatus === "Cancelled") {
+        if (booking.status === "cancelled") {
             return res.status(400).json({ message: "Booking already cancelled" });
         }
 
@@ -98,7 +100,7 @@ export const cancelBooking = async (req, res) => {
         }
 
 
-        booking.bookingStatus = "Cancelled";
+        booking.status = "cancelled";
         // Refund logic (pseudo-code or call to real payment gateway API)
         const payment = await Payment.findOne({ booking: booking._id });
 

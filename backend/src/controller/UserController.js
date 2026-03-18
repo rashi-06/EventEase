@@ -26,7 +26,7 @@ export const updateUserProfile = async(req,res)=>{
 
         const updatedUser =  await user.save();
         res.status(200).json({
-            _id: updatedbody.userId,
+            _id: updatedUser._id,
             name: updatedUser.name,
             email: updatedUser.email,
         })

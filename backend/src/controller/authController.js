@@ -1,5 +1,5 @@
 import User from "../model/User.js";
-import generateToken from "../utility/jwt.js";
+import { generateToken } from "../utility/jwt.js";
 import { validationResult } from "express-validator";
 
 // Register User
@@ -57,9 +57,20 @@ export const loginUser = async (req, res) => {
 // Google login logic
 export const googleOAuthCallback = async(req,res)=>{
   try {
-    const user = req.body.userId;
-    const token = generateToken(user);
-    res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}`);
+    const user = req.user?.user;
+
+    if (!user?._id) {
+      return res.status(400).json({ message: "OAuth user not found" });
+    }
+
+    const token = generateToken(user._id);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.redirect(`${process.env.CLIENT_URL}/dashboard`);
   } catch (error) {
     console.error("OAuth Error:", error);
     res.status(500).json({ message: "OAuth login failed" });  
@@ -70,6 +81,7 @@ export const googleOAuthCallback = async(req,res)=>{
 // logout method
 export const logoutUser = (req, res) => {
   req.logout(() => {
+    res.clearCookie("token");
     res.status(200).json({ message: "Logged out successfully" });
   });
 };
