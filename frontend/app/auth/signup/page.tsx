@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import { api } from "../../lib/api";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -14,11 +14,7 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        { name, email, password },
-        { withCredentials: true, headers: { "Content-Type": "application/json" } }
-      );
+      const res = await api.post("/api/auth/register", { name, email, password });
       if (res.status < 200 || res.status >= 300) throw new Error("Signup failed");
       router.push("/auth/login");
     } catch (err: any) {

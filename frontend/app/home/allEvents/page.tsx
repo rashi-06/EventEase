@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import axios from "axios";
+import { api } from "../../lib/api";
 
 interface Event {
   _id: string;
   title: string;
   date: string;
-  location: string;
+  venue: string;
   description?: string;
 }
 
@@ -19,10 +19,10 @@ export default function AllEventsPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/events", { withCredentials: true });
+        const res = await api.get("/api/events");
         setEvents(res.data);
       } catch (err: any) {
-        setError(err?.message || "Failed to load events");
+        setError(err?.response?.data?.message || err?.message || "Failed to load events");
       } finally {
         setLoading(false);
       }
@@ -43,7 +43,7 @@ export default function AllEventsPage() {
             <div>
               <h3 className="text-xl font-semibold text-blue-800 mb-2">{event.title}</h3>
               <p className="text-gray-800 mb-1">Date: {new Date(event.date).toLocaleDateString()}</p>
-              <p className="text-gray-800 mb-3">Location: {event.location}</p>
+              <p className="text-gray-800 mb-3">Venue: {event.venue}</p>
             </div>
             <Link href={`/home/allEvents/${event._id}`} className="mt-4 inline-block text-center bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">View Details</Link>
           </div>

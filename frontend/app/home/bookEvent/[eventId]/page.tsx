@@ -1,65 +1,88 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import {loadStripe} from "@stripe/stripe-js";
-import {Elements, PaymentElement, useStripe, useElements} from "@stripe/react-stripe-js";
 
-interface Event {
-  _id: string;
-  title: string;
-  date: string;
-  location: string;
-  price?: number;
-  availableSeats?: number;
-}
+import { useEffect, useState } from "react";
+import { use } from "react";
+import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import { api } from "../../../lib/api";
+import type { EventRecord } from "../../../lib/types";
+import {
+  ActionButton,
+  MessageBanner,
+  TextInput,
+} from "../../../components/dashboard/DashboardUI";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
+);
 
-function CheckoutForm({ clientSecret }: { clientSecret: string }) {
+function CheckoutForm({
+  bookingId,
+}: {
+  bookingId: string;
+}) {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setError("");
-    setSuccess("");
     setLoading(true);
+
     if (!stripe || !elements) {
-      setError("Stripe not loaded");
+      setError("Stripe is still loading. Please try again.");
       setLoading(false);
       return;
     }
+
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {},
       redirect: "if_required",
     });
+
     if (result.error) {
-      setError(result.error.message || "Payment failed");
-    } else if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
-      setSuccess("Payment successful!");
+      setError(result.error.message || "Payment failed.");
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    const paymentId = result.paymentIntent?.id;
+    const status = result.paymentIntent?.status ?? "unknown";
+    router.push(
+      `/payment/status?paymentId=${encodeURIComponent(paymentId ?? "")}&bookingId=${encodeURIComponent(bookingId)}&status=${encodeURIComponent(status)}`
+    );
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: 24 }}>
+    <form className="space-y-4" onSubmit={handleSubmit}>
       <PaymentElement options={{ layout: "tabs" }} />
-      <button type="submit" style={{ width: "100%", marginTop: 12 }} disabled={loading}>
-        {loading ? "Processing..." : "Pay Now"}
-      </button>
-      {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
-      {success && <div style={{ color: "green", marginTop: 8 }}>{success}</div>}
+      {error ? <MessageBanner tone="error">{error}</MessageBanner> : null}
+      <ActionButton type="submit" disabled={loading} className="w-full">
+        {loading ? "Processing payment..." : "Confirm payment"}
+      </ActionButton>
     </form>
   );
 }
 
-export default function BookEventPage({ params }: { params: { eventId: string } }) {
-  const [event, setEvent] = useState<Event | null>(null);
+export default function BookEventPage({
+  params,
+}: {
+  params: Promise<{ eventId: string }>;
+}) {
+  const { eventId } = use(params);
+  const [event, setEvent] = useState<EventRecord | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -68,80 +91,152 @@ export default function BookEventPage({ params }: { params: { eventId: string } 
   const [bookingId, setBookingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadEvent = async () => {
+    void (async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/events/${params.eventId}`,{ withCredentials: true });
-        setEvent(res.data);
-      } catch (err: any) {
-        setError(err?.response?.data?.message || err.message || "Failed to fetch event");
+        const response = await api.get<EventRecord>(`/api/events/${eventId}`);
+        setEvent(response.data);
+      } catch (fetchError: any) {
+        setError(
+          fetchError?.response?.data?.message ||
+            "Failed to fetch event details."
+        );
       } finally {
         setLoading(false);
       }
-    };
-    loadEvent();
-  }, [params.eventId]);
+    })();
+  }, [eventId]);
 
-  const handleBooking = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleBooking = async (eventSubmit: React.FormEvent) => {
+    eventSubmit.preventDefault();
     setError("");
+    setSaving(true);
+
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/bookings",
-        { eventId: params.eventId, name, email, noOfTickets },
-        { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      const bookingResponse = await api.post("/api/bookings", {
+        eventId,
+        noOfTickets,
+        name,
+        email,
+      });
+
+      const createdBookingId = bookingResponse.data.bookingId;
+
+      const paymentResponse = await api.post("/api/payments/create-payment-intent", {
+        amount: (event?.price ?? 0) * noOfTickets,
+        bookingId: createdBookingId,
+      });
+
+      setBookingId(createdBookingId);
+      setClientSecret(paymentResponse.data.clientSecret);
+    } catch (bookingError: any) {
+      setError(
+        bookingError?.response?.data?.message || "Booking failed."
       );
-      setBookingId(res.data.bookingId || null);
-      setClientSecret(res.data.clientSecret || null);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Booking failed");
+    } finally {
+      setSaving(false);
     }
   };
 
-  if (loading) return <div>Loading event...</div>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
-  if (!event) return <div>Event not found.</div>;
+  if (loading) {
+    return <div className="p-10 text-center">Loading event...</div>;
+  }
+
+  if (!event) {
+    return <div className="p-10 text-center">Event not found.</div>;
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8">
-        <h1 className="text-2xl font-bold text-blue-900 mb-4">Book Event: {event.title}</h1>
-        <p className="text-gray-800 mb-1">Date: {new Date(event.date).toLocaleDateString()}</p>
-        <p className="text-gray-800 mb-1">Location: {event.location}</p>
-        <p className="text-gray-800 mb-4">Price: ₹{event.price || 0}</p>
-        {!clientSecret ? (
-          <form onSubmit={handleBooking} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Your Name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-            <input
-              type="email"
-              placeholder="Your Email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-            <input
-              type="number"
-              min={1}
-              max={event.availableSeats || 10}
-              value={noOfTickets}
-              onChange={e => setNoOfTickets(Number(e.target.value))}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-            <button type="submit" className="w-full py-3 px-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors">Book Now</button>
-          </form>
-        ) : (
-          <Elements stripe={stripePromise} options={{ clientSecret }}>
-            <CheckoutForm clientSecret={clientSecret} />
-          </Elements>
-        )}
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(149,106,250,0.16),_transparent_38%)] px-4 py-10">
+      <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="rounded-[28px] border border-black/5 bg-background p-8 shadow-[0_24px_90px_rgba(149,106,250,0.14)]">
+          <p className="text-sm uppercase tracking-[0.22em] text-primary/65">
+            Event Booking
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold text-foreground">
+            {event.title}
+          </h1>
+          <p className="mt-4 text-sm leading-6 text-foreground/65">
+            {event.description || "Secure your seats and complete payment through Stripe."}
+          </p>
+
+          <div className="mt-6 grid gap-3 rounded-[22px] border border-black/5 bg-white p-5 text-sm text-foreground/70">
+            <p>
+              <span className="font-semibold text-foreground">Date:</span>{" "}
+              {new Date(event.date).toLocaleDateString()}
+            </p>
+            <p>
+              <span className="font-semibold text-foreground">Time:</span>{" "}
+              {event.time}
+            </p>
+            <p>
+              <span className="font-semibold text-foreground">Venue:</span>{" "}
+              {event.venue}
+            </p>
+            <p>
+              <span className="font-semibold text-foreground">Price:</span> Rs.{" "}
+              {event.price ?? 0}
+            </p>
+            <p>
+              <span className="font-semibold text-foreground">Available seats:</span>{" "}
+              {event.availableSeats ?? 0}
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-[28px] border border-black/5 bg-background p-8 shadow-[0_24px_90px_rgba(149,106,250,0.14)]">
+          <h2 className="text-2xl font-semibold text-foreground">
+            {clientSecret ? "Complete payment" : "Reserve your tickets"}
+          </h2>
+          <p className="mt-2 text-sm text-foreground/65">
+            {clientSecret
+              ? "Your booking is created. Finish the Stripe payment below."
+              : "This form creates the booking first, then prepares a payment intent."}
+          </p>
+
+          {error ? <div className="mt-4"><MessageBanner tone="error">{error}</MessageBanner></div> : null}
+
+          {!clientSecret ? (
+            <form className="mt-6 space-y-4" onSubmit={handleBooking}>
+              <TextInput
+                label="Full name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Your name"
+                required
+              />
+              <TextInput
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+              <TextInput
+                label="Tickets"
+                type="number"
+                min="1"
+                max={String(event.availableSeats ?? 10)}
+                value={String(noOfTickets)}
+                onChange={(event) => setNoOfTickets(Number(event.target.value))}
+                required
+              />
+              <div className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-4 text-sm text-foreground/70">
+                Total payable: <span className="font-semibold text-foreground">Rs. {(event.price ?? 0) * noOfTickets}</span>
+              </div>
+              <ActionButton type="submit" disabled={saving} className="w-full">
+                {saving ? "Preparing payment..." : "Continue to payment"}
+              </ActionButton>
+            </form>
+          ) : bookingId ? (
+            <div className="mt-6">
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <CheckoutForm bookingId={bookingId} />
+              </Elements>
+            </div>
+          ) : null}
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
