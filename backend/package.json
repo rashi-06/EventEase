@@ -30,7 +30,8 @@
     "razorpay": "^2.9.6",
     "redis": "^4.7.0",
     "stream-buffers": "^3.0.3",
-    "stripe": "^18.1.1"
+    "stripe": "^18.1.1",
+    "zustand": "^5.0.10"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

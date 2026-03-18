@@ -11,7 +11,7 @@ EventEase is an Event Ticket Booking System with a subscription model, built wit
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB with Mongoose
 - **Authentication**: JWT, Google OAuth2 (Passport.js)
-- **State Management (Frontend)**: Redux Toolkit
+- **State Management (Frontend)**: Zustand
 - **Caching**: Redis
 - **Payment Gateway**: Razorpay
 - **Validation**: express-validator
