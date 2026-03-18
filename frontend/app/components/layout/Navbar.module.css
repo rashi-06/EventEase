@@ -1,0 +1,109 @@
+.header {
+  width: 100%;
+  border-bottom: 1px solid rgba(149, 106, 250, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  gap: 2rem;
+}
+
+.link {
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: var(--foreground);
+  opacity: 0.8;
+}
+
+.link:hover {
+  opacity: 1;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Theme toggle */
+.themeToggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(149, 106, 250, 0.4);
+  background-image: url("/icons/theme-toggle.png");
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  cursor: pointer;
+}
+
+/* Login button */
+.login {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  background-color: var(--primary);
+  color: white;
+  font-size: 0.9rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.hamburger span {
+  width: 22px;
+  height: 2px;
+  background: var(--foreground);
+}
+
+/* Mobile menu */
+.mobileMenu {
+  display: none;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.2rem;
+  border-top: 1px solid rgba(149, 106, 250, 0.15);
+}
+
+/* ---------------- MOBILE ---------------- */
+
+@media (max-width: 768px) {
+  .links {
+    display: none;
+  }
+
+  .login {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .mobileMenu {
+    display: flex;
+  }
+}

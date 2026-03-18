@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const HeroSection = () => {
   return (
     <section className="bg-background text-foreground transition-colors duration-300">
@@ -5,30 +7,36 @@ const HeroSection = () => {
         
         {/* Badge */}
         <span className="mb-4 rounded-full bg-primary/10 px-4 py-1 text-sm font-medium text-primary">
-          Build Faster with Confidence
+          Discover, host, and book unforgettable events
         </span>
 
         {/* Heading */}
         <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-          Craft modern web experiences <br />
-          <span className="text-primary">with clean UI</span>
+          Find the right event, <br />
+          <span className="text-primary">reserve your seat in minutes</span>
         </h1>
 
         {/* Description */}
         <p className="mt-6 max-w-2xl text-lg text-foreground/80">
-          A scalable, theme-aware UI foundation built with Tailwind CSS,
-          CSS variables, and modern React best practices.
+          EventEase brings public events, personal bookings, organizer tools,
+          and payments into one smooth booking experience.
         </p>
 
         {/* Buttons */}
         <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <button className="rounded-lg bg-primary px-6 py-3 text-white font-medium hover:opacity-90 transition">
-            Get Started
-          </button>
+          <Link
+            href="/home/allEvents"
+            className="rounded-lg bg-primary px-6 py-3 text-white font-medium hover:opacity-90 transition"
+          >
+            Explore Events
+          </Link>
 
-          <button className="rounded-lg border border-primary px-6 py-3 text-primary font-medium hover:bg-primary hover:text-white transition">
-            Learn More
-          </button>
+          <Link
+            href="/auth/signup"
+            className="rounded-lg border border-primary px-6 py-3 text-primary font-medium hover:bg-primary hover:text-white transition"
+          >
+            Create Account
+          </Link>
         </div>
       </div>
     </section>
