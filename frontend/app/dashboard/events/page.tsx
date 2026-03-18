@@ -188,15 +188,15 @@ export default function DashboardEventsPage() {
 
   return (
     <DashboardShell
-      title="Event Control Room"
-      description="Create new events, refine existing ones, and clean up anything you no longer want published through the event APIs."
+      title="Host Events"
+      description="Create new experiences, update event details, and keep your listings ready for attendees."
     >
       {message ? <MessageBanner tone={message.tone}>{message.text}</MessageBanner> : null}
 
       <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <SectionCard
           title={editingId ? "Edit event" : "Create event"}
-          description="This form is connected to the create and update event APIs."
+          description="Set up the schedule, venue, pricing, and seats for your next event."
           action={
             editingId ? (
               <ActionButton
@@ -292,7 +292,7 @@ export default function DashboardEventsPage() {
 
         <SectionCard
           title="My events"
-          description="Loaded from the event listing API and filtered to the signed-in organizer."
+          description="See the events you are hosting and jump back into editing anytime."
         >
           {loading ? (
             <p className="text-sm text-foreground/60">Loading your events...</p>

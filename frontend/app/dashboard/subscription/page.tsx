@@ -175,15 +175,15 @@ export default function DashboardSubscriptionPage() {
 
   return (
     <DashboardShell
-      title="Subscription Studio"
-      description="Manage the subscription APIs from a dedicated panel, including activation, cancellation, purchase, and payment intent testing."
+      title="Membership & Payments"
+      description="Manage your EventEase plan, keep your access active, and review payment setup from one place."
     >
       {message ? <MessageBanner tone={message.tone}>{message.text}</MessageBanner> : null}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
         <SectionCard
           title="Current subscription"
-          description="Reads both the subscription details API and the subscription status API."
+          description="Check your current plan, renewal window, and access status."
           action={
             effectiveSubscription ? (
               <StatusBadge tone={activeTone}>
@@ -239,7 +239,7 @@ export default function DashboardSubscriptionPage() {
 
         <SectionCard
           title="Purchase subscription"
-          description="Connected to the mock purchase API. Enter a payment reference to simulate a paid plan."
+          description="Activate a paid plan with a payment reference and keep premium organizer access enabled."
         >
           <form className="grid gap-4" onSubmit={handlePurchase}>
             <TextInput
@@ -271,8 +271,8 @@ export default function DashboardSubscriptionPage() {
       </div>
 
       <SectionCard
-        title="Payment intent tester"
-        description="This utility is connected to the payment intent API and returns the Stripe client secret."
+        title="Payment setup"
+        description="Generate a payment intent to validate that Stripe checkout is ready before you charge a customer."
       >
         <form className="grid gap-4 md:grid-cols-[0.7fr_auto]" onSubmit={handleIntentCreate}>
           <TextInput

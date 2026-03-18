@@ -166,8 +166,8 @@ export default function DashboardPage() {
 
   return (
     <DashboardShell
-      title="Personal Dashboard"
-      description="Manage your account details, review bookings, and keep an eye on your current subscription from one place."
+      title="My Event Dashboard"
+      description="Keep your account details current, track upcoming bookings, and manage your EventEase membership in one place."
     >
       {message ? <MessageBanner tone={message.tone}>{message.text}</MessageBanner> : null}
 
@@ -180,19 +180,19 @@ export default function DashboardPage() {
         <MetricCard
           label="Subscription"
           value={subscription?.status ?? "none"}
-          hint="Your current membership state from the subscription API."
+          hint="Your current EventEase membership status."
         />
         <MetricCard
           label="Account"
           value={user?.name ?? (loading ? "Loading" : "Guest")}
-          hint="Update your personal details below whenever you need."
+          hint="Keep your booking profile ready for faster checkouts."
         />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <SectionCard
           title="Profile"
-          description="This form is wired to the user profile update API."
+          description="Update the details tied to your account and future bookings."
           action={<ActionButton variant="secondary" onClick={handleLogout}>Logout</ActionButton>}
         >
           <form className="grid gap-4 md:grid-cols-2" onSubmit={handleProfileSave}>
@@ -235,7 +235,7 @@ export default function DashboardPage() {
 
         <SectionCard
           title="Danger Zone"
-          description="Delete your account permanently if you no longer want to use EventEase."
+          description="Permanently remove your account if you no longer plan to book or host events."
         >
           <div className="space-y-4 rounded-[22px] border border-rose-100 bg-rose-50 p-5">
             <p className="text-sm leading-6 text-rose-700">
@@ -254,7 +254,7 @@ export default function DashboardPage() {
 
       <SectionCard
         title="My Bookings"
-        description="Connected to the booking list and cancellation APIs."
+        description="Review your reserved events and cancel a booking if your plans change."
       >
         {loading ? (
           <p className="text-sm text-foreground/60">Loading bookings...</p>
